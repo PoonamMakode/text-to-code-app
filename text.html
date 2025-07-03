@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextToCode - Convert Text to Code Instantly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        #output-code {
+            min-height: 300px;
+            font-family: 'Fira Code', monospace;
+        }
+        .typewriter-effect {
+            display: flex;
+            justify-content: center;
+            font-family: monospace;
+        }
+        .typewriter-effect .text {
+            max-width: 0;
+            animation: typing 3s steps(40) 1s 1 normal both;
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: 500;
+            border-right: 3px solid #38bdf8;
+        }
+        @keyframes typing {
+            from { max-width: 0 }
+            to { max-width: 100% }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                TextToCode Converter
+            </h1>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                Turn your ideas into working code instantly. Describe what you need in plain English and get clean,
+                formatted code in your preferred language.
+            </p>
+        </header>
+
+        <div class="flex flex-col md:flex-row gap-8 mb-12">
+            <div class="flex-1">
+                <div class="bg-gray-800 rounded-xl shadow-2xl p-6 h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold">Your Description</h2>
+                            <div class="flex-1 max-w-xs ml-4">
+                                <select id="language-select" class="bg-gray-700 text-white text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="java">Java</option>
+                                    <option value="csharp">C#</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <textarea id="input-text" class="w-full h-full p-4 bg-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Describe what you want to code..."></textarea>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button id="generate-btn" class="px-6 py-2.5 bg-blue-600 text-white font-medium text-sm leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out flex items-center">
+                                <span>Generate Code</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="bg-gray-800 rounded-xl shadow-2xl p-6 h-full">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Generated Code</h2>
+                        <div class="flex space-x-3">
+                            <button id="copy-btn" class="px-4 py-1.5 text-sm flex items-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-64 md:flex-1">
+                        <pre class="h-full"><code id="output-code" class="language-javascript rounded-lg">// Your generated code will appear here...</code></pre>
+                    </div>
+                    <div id="loading-indicator" class="hidden mt-4 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-600 border-t-blue-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-16">
+            <h2 class="text-2xl font-semibold mb-6">Try These Examples</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+                <div class="p-5 bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-700 transition-colors">
+                    <div class="typewriter-effect mb-2">
+                        <span class="text">"JavaScript function to reverse a string"</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">Generates a JavaScript function that takes a string and returns the reversed version.</p>
+                </div>
+                <div class="p-5 bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-700 transition-colors">
+                    <div class="typewriter-effect mb-2">
+                        <span class="text">"Python code for Fibonacci sequence"</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">Creates Python code that generates the Fibonacci sequence up to n numbers.</p>
+                </div>
+                <div class="p-5 bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-700 transition-colors">
+                    <div class="typewriter-effect mb-2">
+                        <span class="text">"HTML form with validation"</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">Produces a complete HTML form with name, email, and password fields with validation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-8 text-center mt-12">
+            <div class="flex items-center justify-center mb-4">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c37174d5-d9c8-4ca2-8472-c88a76f30186.png" alt="Coding illustration showing a laptop with code snippets floating above it in a futuristic style" class="rounded-full w-16 h-16 object-cover">
+            </div>
+            <h2 class="text-2xl font-semibold mb-2">Need More Examples?</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto mb-6">Try describing what you want in natural language. The more specific you are, the better the results! For example: "React component that displays a counter with increment and decrement buttons"</p>
+            <button class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors">
+                Start Converting Text to Code
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // API endpoint configuration
+            const API_ENDPOINT = 'https://api.blackbox.ai/v1/codegen';
+            let conversationHistory = [];
+            // Initialize code highlighting
+            hljs.highlightAll();
+            
+            // Example click handlers
+            const examples = document.querySelectorAll('.typewriter-effect');
+            examples.forEach(example => {
+                example.addEventListener('click', function() {
+                    const text = this.querySelector('.text').textContent;
+                    document.getElementById('input-text').value = text;
+                });
+            });
+
+            // Copy button functionality
+            document.getElementById('copy-btn').addEventListener('click', function() {
+                const code = document.getElementById('output-code').textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Copied!';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+
+            // Enhanced generate button functionality with Blackbox-like features
+            document.getElementById('generate-btn').addEventListener('click', async function() {
+                const inputText = document.getElementById('input-text').value;
+                const language = document.getElementById('language-select').value;
+                const outputCode = document.getElementById('output-code');
+                const loadingIndicator = document.getElementById('loading-indicator');
+                
+                if (!inputText.trim()) {
+                    outputCode.textContent = '// Please enter a description to generate code';
+                    hljs.highlightElement(outputCode);
+                    return;
+                }
+
+                // Show loading
+                loadingIndicator.classList.remove('hidden');
+                
+                try {
+                    // Add to conversation history
+                    conversationHistory.push({
+                        role: "user",
+                        content: inputText
+                    });
+
+                    // Call API (replace with actual Blackbox API call)
+                    const response = await fetch(API_ENDPOINT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer YOUR_API_KEY'
+                        },
+                        body: JSON.stringify({
+                            prompt: inputText,
+                            language: language,
+                            conversation: conversationHistory,
+                            temperature: 0.7,
+                            maxTokens: 1000
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    // Store AI response in history
+                    conversationHistory.push({
+                        role: "assistant",
+                        content: data.code
+                    });
+
+                    outputCode.textContent = data.code;
+                    outputCode.className = 'language-' + language;
+                    hljs.highlightElement(outputCode);
+                } catch (error) {
+                    outputCode.textContent = `// Error: ${error.message}\n// Using fallback generation...\n\n`;
+                    // Fallback to mock generation if API fails
+                    const mockCode = {
+                        'javascript': `// ${inputText}\nfunction ${inputText.split(' ').join('_')}() {\n  // Implementation\n}`,
+                        'python': `# ${inputText}\ndef ${inputText.split(' ').join('_')}():\n    pass`,
+                        'html': `<!-- ${inputText} -->\n<div>\n  <!-- Implementation -->\n</div>`,
+                        'css': `/* ${inputText} */\n.element {\n  /* Styles */\n}`
+                    }[language] || `// Generated ${language} code for: ${inputText}`;
+                    outputCode.textContent += mockCode;
+                    hljs.highlightElement(outputCode);
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            });
+
+            // Add conversation clearing functionality
+            const clearBtn = document.createElement('button');
+            clearBtn.id = 'clear-conversation';
+            clearBtn.className = 'px-4 py-1.5 text-sm flex items-center bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors ml-3';
+            clearBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>Clear History';
+            clearBtn.addEventListener('click', function() {
+                conversationHistory = [];
+                document.getElementById('output-code').textContent = '// Conversation history cleared\n// Ready for new input...';
+                hljs.highlightElement(document.getElementById('output-code'));
+            });
+            document.querySelector('.flex.space-x-3').appendChild(clearBtn);
+        });
+    </script>
+</body>
+</html>
+
